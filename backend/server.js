@@ -4,8 +4,9 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import authRoutes from "./routes/authRoutes.js";
-import transactionRoutes from "./routes/transactionRoutes.js";   // ✅ ADD
-import dashboardRoutes from "./routes/dashboardRoutes.js";       // ✅ ADD
+import transactionRoutes from "./routes/transactionRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
+import userRoutes from "./routes/userRoutes.js"; // 🔥 NEW
 
 dotenv.config();
 
@@ -14,22 +15,33 @@ const app = express();
 // ✅ Middleware
 app.use(express.json());
 
-app.use(cors({
-  origin: "http://localhost:5173"
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 // ✅ Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/transactions", transactionRoutes);   // ✅ ADD
-app.use("/api/dashboard", dashboardRoutes);       // ✅ ADD
+app.use("/api/transactions", transactionRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/users", userRoutes); // 🔥 NEW (IMPORTANT)
 
-// ✅ MongoDB
+// ✅ MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log(err));
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.log("❌ MongoDB error:", err));
+
+// ✅ Health Check (optional but useful)
+app.get("/", (req, res) => {
+  res.send("API running...");
+});
 
 // ✅ Server
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });

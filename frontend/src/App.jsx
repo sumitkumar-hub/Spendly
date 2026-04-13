@@ -11,6 +11,7 @@ import Reports from "./pages/Reports.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { Toaster } from "react-hot-toast";
 import Landing from "./pages/Landing";
+import Profile from "./pages/Profile";
 
 export default function App() {
   return (
@@ -46,6 +47,10 @@ export default function App() {
           path="/reports"
           element={<ProtectedRoute><Reports /></ProtectedRoute>}
         />
+        <Route
+  path="/profile"
+  element={<ProtectedRoute><Profile /></ProtectedRoute>}
+/>
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />

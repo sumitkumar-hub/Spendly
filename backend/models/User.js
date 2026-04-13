@@ -1,25 +1,29 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
     email: {
       type: String,
       required: true,
       unique: true,
       lowercase: true,
-      trim: true
+      trim: true,
     },
 
     password: {
       type: String,
       required: true,
-      minlength: 6
+      minlength: 6,
     },
 
-    // 🔥 NEW FIELDS (IMPORTANT)
+    // 🔐 Password Reset (already good)
     resetPasswordToken: {
       type: String,
     },
@@ -27,28 +31,25 @@ const userSchema = new mongoose.Schema(
     resetPasswordExpire: {
       type: Date,
     },
-
   },
   { timestamps: true }
 );
 
-// 🔐 HASH PASSWORD
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    return next();
-  } catch (err) {
-    return next(err);
-  }
+// 🔐 HASH PASSWORD (ONLY WHEN MODIFIED)
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+
+  next();
 });
 
 // 🔑 COMPARE PASSWORD
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;
