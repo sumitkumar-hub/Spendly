@@ -5,15 +5,19 @@ import ProfileDrawer from "./ProfileDrawer";
 import {
   LayoutDashboard,
   ArrowLeftRight,
-  BarChart3
+  BarChart3,
+  Menu,
+  X
 } from "lucide-react";
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // dropdown
+  const [mobileOpen, setMobileOpen] = useState(false); // 🔥 mobile sidebar
   const [showDrawer, setShowDrawer] = useState(false);
+
   const [user, setUser] = useState(
     JSON.parse(localStorage.getItem("user")) || {
       name: "User",
@@ -24,21 +28,9 @@ export default function Sidebar() {
   const dropdownRef = useRef();
 
   const menu = [
-    {
-      name: "Dashboard",
-      path: "/dashboard",
-      icon: <LayoutDashboard size={18} />
-    },
-    {
-      name: "Transactions",
-      path: "/transactions",
-      icon: <ArrowLeftRight size={18} />
-    },
-    {
-      name: "Reports",
-      path: "/reports",
-      icon: <BarChart3 size={18} />
-    },
+    { name: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} /> },
+    { name: "Transactions", path: "/transactions", icon: <ArrowLeftRight size={18} /> },
+    { name: "Reports", path: "/reports", icon: <BarChart3 size={18} /> },
   ];
 
   const handleLogout = () => {
@@ -47,7 +39,7 @@ export default function Sidebar() {
     navigate("/login");
   };
 
-  // 🔥 Live user update
+  // 🔥 live update
   useEffect(() => {
     const updateUser = () => {
       const updated = JSON.parse(localStorage.getItem("user"));
@@ -58,7 +50,7 @@ export default function Sidebar() {
     return () => window.removeEventListener("userUpdated", updateUser);
   }, []);
 
-  // 🔥 Close dropdown outside click
+  // 🔥 close dropdown outside
   useEffect(() => {
     const handler = (e) => {
       if (!dropdownRef.current?.contains(e.target)) {
@@ -69,16 +61,50 @@ export default function Sidebar() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  // 🔥 close sidebar on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
   return (
     <>
-      <div className="w-64 h-screen bg-slate-900 text-white flex flex-col justify-between">
+      {/* 🔥 MOBILE TOP BAR */}
+      <div className="lg:hidden flex items-center justify-between p-4 bg-slate-900 text-white">
+        <h1 className="font-bold">Spendly</h1>
+        <button onClick={() => setMobileOpen(true)}>
+          <Menu />
+        </button>
+      </div>
+
+      {/* 🔥 OVERLAY */}
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        />
+      )}
+
+      {/* 🔥 SIDEBAR */}
+      <div
+        className={`fixed top-0 left-0 h-full w-64 bg-slate-900 text-white flex flex-col justify-between z-50 transform transition-transform duration-300
+        ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+        lg:translate-x-0 lg:static`}
+      >
+        {/* 🔥 MOBILE CLOSE */}
+        <div className="flex justify-between items-center p-4 lg:hidden">
+          <h1 className="font-bold">Menu</h1>
+          <button onClick={() => setMobileOpen(false)}>
+            <X />
+          </button>
+        </div>
 
         {/* TOP */}
         <div>
-          <h1 className="text-xl font-bold p-6">Spendly</h1>
+          <h1 className="text-xl font-bold p-6 hidden lg:block">
+            Spendly
+          </h1>
 
           <div className="flex flex-col gap-2 px-4">
-
             {menu.map((item) => {
               const active = location.pathname === item.path;
 
@@ -87,24 +113,22 @@ export default function Sidebar() {
                   key={item.name}
                   onClick={() => navigate(item.path)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                    ${
-                      active
-                        ? "bg-indigo-500 text-white shadow-lg"
-                        : "text-gray-400 hover:bg-white/10 hover:text-white"
-                    }`}
+                  ${
+                    active
+                      ? "bg-indigo-500 text-white shadow-lg"
+                      : "text-gray-400 hover:bg-white/10 hover:text-white"
+                  }`}
                 >
                   {item.icon}
                   <span>{item.name}</span>
                 </button>
               );
             })}
-
           </div>
         </div>
 
         {/* PROFILE */}
         <div className="p-4 border-t border-white/10 relative" ref={dropdownRef}>
-
           <div
             onClick={() => setOpen(!open)}
             className="flex items-center gap-3 cursor-pointer hover:bg-white/5 p-2 rounded-lg transition"
@@ -121,7 +145,6 @@ export default function Sidebar() {
 
           {open && (
             <div className="mt-3 bg-slate-800 rounded-xl shadow-lg p-2 flex flex-col gap-1">
-
               <button
                 onClick={() => {
                   setOpen(false);
@@ -142,7 +165,6 @@ export default function Sidebar() {
               >
                 Logout
               </button>
-
             </div>
           )}
         </div>

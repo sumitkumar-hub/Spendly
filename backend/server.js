@@ -7,9 +7,10 @@ import authRoutes from "./routes/authRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import budgetRoutes from "./routes/budgetRoutes.js";
 
 // 🔥 NEW IMPORT
-import budgetRoutes from "./routes/budgetRoutes.js";
+import categoryBudgetRoutes from "./routes/categoryBudgetRoutes.js";
 
 dotenv.config();
 
@@ -34,9 +35,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/budget", budgetRoutes);
 
 // 🔥 NEW ROUTE
-app.use("/api/budget", budgetRoutes);
+app.use("/api/category-budget", categoryBudgetRoutes);
 
 // ✅ MongoDB
 mongoose

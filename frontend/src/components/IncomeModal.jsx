@@ -12,7 +12,7 @@ export default function IncomeModal({ onClose, onAdd }) {
   const [form, setForm] = useState({
     title: "",
     amount: "",
-    category: "Salary", // 🔥 default
+    category: "Salary",
     date: ""
   });
 
@@ -38,32 +38,31 @@ export default function IncomeModal({ onClose, onAdd }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-3"
       onClick={onClose}
     >
 
       <form
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
-        className="bg-slate-900 border border-white/10 backdrop-blur-xl p-6 rounded-2xl w-80 space-y-4 shadow-2xl"
+        className="bg-slate-900 border border-white/10 backdrop-blur-xl p-4 sm:p-6 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl"
       >
 
         {/* HEADER */}
         <div className="flex justify-between items-center">
-          <h2 className="text-white font-semibold text-lg">
+          <h2 className="text-white font-semibold text-base sm:text-lg">
             Add Income
           </h2>
 
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-white text-xl"
+            className="text-gray-400 hover:text-white text-lg"
           >
             ✕
           </button>
         </div>
 
-        {/* ERROR */}
         {error && (
           <p className="text-red-400 text-sm">{error}</p>
         )}
@@ -73,7 +72,7 @@ export default function IncomeModal({ onClose, onAdd }) {
           placeholder="Title"
           value={form.title}
           onChange={e => setForm({ ...form, title: e.target.value })}
-          className="w-full p-2 rounded-lg bg-white/10 text-white outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full p-2 sm:p-3 rounded-lg bg-white/10 text-white outline-none focus:ring-2 focus:ring-indigo-500"
         />
 
         {/* AMOUNT */}
@@ -82,14 +81,14 @@ export default function IncomeModal({ onClose, onAdd }) {
           placeholder="Amount"
           value={form.amount}
           onChange={e => setForm({ ...form, amount: e.target.value })}
-          className="w-full p-2 rounded-lg bg-white/10 text-white outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full p-2 sm:p-3 rounded-lg bg-white/10 text-white outline-none focus:ring-2 focus:ring-indigo-500"
         />
 
-        {/* 🔥 CATEGORY DROPDOWN */}
+        {/* CATEGORY */}
         <select
           value={form.category}
           onChange={e => setForm({ ...form, category: e.target.value })}
-          className="w-full p-2 rounded-lg bg-white/10 text-white outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full p-2 sm:p-3 rounded-lg bg-white/10 text-white outline-none focus:ring-2 focus:ring-indigo-500"
         >
           {incomeCategories.map((cat) => (
             <option key={cat}>{cat}</option>
@@ -101,11 +100,11 @@ export default function IncomeModal({ onClose, onAdd }) {
           type="date"
           value={form.date}
           onChange={e => setForm({ ...form, date: e.target.value })}
-          className="w-full p-2 rounded-lg bg-white/10 text-white outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full p-2 sm:p-3 rounded-lg bg-white/10 text-white outline-none focus:ring-2 focus:ring-indigo-500"
         />
 
         {/* BUTTON */}
-        <button className="bg-green-500 w-full py-2 rounded-lg text-white hover:bg-green-600 transition">
+        <button className="bg-green-500 w-full py-2 sm:py-3 text-sm sm:text-base rounded-lg text-white hover:bg-green-600 transition">
           Add Income
         </button>
 
