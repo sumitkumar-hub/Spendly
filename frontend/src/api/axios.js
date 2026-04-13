@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api", // 🔥 CHANGE BACK TO localhost
+  baseURL: "https://spendly-6pad.onrender.com/api", // ✅ LIVE BACKEND
+  withCredentials: true,
 });
 
 // ✅ Attach token
