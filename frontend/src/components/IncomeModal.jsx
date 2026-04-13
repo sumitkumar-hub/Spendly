@@ -1,11 +1,18 @@
 import { useState } from "react";
 
+const incomeCategories = [
+  "Salary",
+  "Freelance",
+  "Business",
+  "Other",
+];
+
 export default function IncomeModal({ onClose, onAdd }) {
 
   const [form, setForm] = useState({
     title: "",
     amount: "",
-    category: "",
+    category: "Salary", // 🔥 default
     date: ""
   });
 
@@ -14,7 +21,6 @@ export default function IncomeModal({ onClose, onAdd }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // ✅ VALIDATION
     if (!form.title || !form.amount) {
       setError("Title and Amount are required");
       return;
@@ -39,7 +45,7 @@ export default function IncomeModal({ onClose, onAdd }) {
       <form
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
-        className="bg-slate-900 border border-white/10 backdrop-blur-xl p-6 rounded-2xl w-80 space-y-4 shadow-2xl animate-fadeIn"
+        className="bg-slate-900 border border-white/10 backdrop-blur-xl p-6 rounded-2xl w-80 space-y-4 shadow-2xl"
       >
 
         {/* HEADER */}
@@ -62,28 +68,38 @@ export default function IncomeModal({ onClose, onAdd }) {
           <p className="text-red-400 text-sm">{error}</p>
         )}
 
-        {/* INPUTS */}
+        {/* TITLE */}
         <input
           placeholder="Title"
+          value={form.title}
           onChange={e => setForm({ ...form, title: e.target.value })}
           className="w-full p-2 rounded-lg bg-white/10 text-white outline-none focus:ring-2 focus:ring-indigo-500"
         />
 
+        {/* AMOUNT */}
         <input
           type="number"
           placeholder="Amount"
+          value={form.amount}
           onChange={e => setForm({ ...form, amount: e.target.value })}
           className="w-full p-2 rounded-lg bg-white/10 text-white outline-none focus:ring-2 focus:ring-indigo-500"
         />
 
-        <input
-          placeholder="Category"
+        {/* 🔥 CATEGORY DROPDOWN */}
+        <select
+          value={form.category}
           onChange={e => setForm({ ...form, category: e.target.value })}
           className="w-full p-2 rounded-lg bg-white/10 text-white outline-none focus:ring-2 focus:ring-indigo-500"
-        />
+        >
+          {incomeCategories.map((cat) => (
+            <option key={cat}>{cat}</option>
+          ))}
+        </select>
 
+        {/* DATE */}
         <input
           type="date"
+          value={form.date}
           onChange={e => setForm({ ...form, date: e.target.value })}
           className="w-full p-2 rounded-lg bg-white/10 text-white outline-none focus:ring-2 focus:ring-indigo-500"
         />

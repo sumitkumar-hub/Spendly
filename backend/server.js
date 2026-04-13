@@ -8,6 +8,9 @@ import transactionRoutes from "./routes/transactionRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 
+// 🔥 NEW IMPORT
+import budgetRoutes from "./routes/budgetRoutes.js";
+
 dotenv.config();
 
 const app = express();
@@ -15,12 +18,12 @@ const app = express();
 // ✅ Middleware
 app.use(express.json());
 
-// 🔥 FIXED CORS (IMPORTANT)
+// 🔥 CORS
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "http://localhost:5174", // 🔥 THIS WAS MISSING
+      "http://localhost:5174",
     ],
     credentials: true,
   })
@@ -32,13 +35,16 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/users", userRoutes);
 
-// ✅ MongoDB Connection
+// 🔥 NEW ROUTE
+app.use("/api/budget", budgetRoutes);
+
+// ✅ MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.log("❌ MongoDB error:", err));
 
-// ✅ Health Check
+// ✅ Health
 app.get("/", (req, res) => {
   res.send("API running...");
 });

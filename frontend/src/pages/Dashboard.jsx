@@ -152,7 +152,7 @@ export default function Dashboard() {
       {/* CHARTS */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <MonthlyChart data={monthlyData} />
-        <CategoryChart data={categoryData} COLORS={COLORS} />
+        <CategoryChart data={filteredExpenses} COLORS={COLORS} />
       </div>
 
       {/* TRANSACTIONS */}

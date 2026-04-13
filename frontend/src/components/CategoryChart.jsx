@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   PieChart,
   Pie,
@@ -8,10 +8,35 @@ import {
   Legend,
 } from "recharts";
 
-export default function CategoryChart({ data = [], COLORS = [] }) {
+const COLORS = [
+  "#10b981",
+  "#3b82f6",
+  "#f59e0b",
+  "#ef4444",
+  "#8b5cf6",
+  "#ec4899",
+];
+
+export default function CategoryChart({ data = [] }) {
+
+  // 🔥 CONVERT RAW DATA → CATEGORY TOTALS
+  const chartData = useMemo(() => {
+    const map = new Map();
+
+    data.forEach((tx) => {
+      if (tx.type !== "expense") return;
+
+      const cat = tx.category || "Other";
+      map.set(cat, (map.get(cat) || 0) + Number(tx.amount || 0));
+    });
+
+    return Array.from(map.entries())
+      .map(([category, value]) => ({ category, value }))
+      .sort((a, b) => b.value - a.value);
+  }, [data]);
 
   // ✅ EMPTY STATE
-  if (!data || data.length === 0) {
+  if (!chartData || chartData.length === 0) {
     return (
       <div className="bg-white/5 p-4 rounded-xl h-[300px] flex items-center justify-center text-gray-400">
         No category data available
@@ -30,7 +55,7 @@ export default function CategoryChart({ data = [], COLORS = [] }) {
         <PieChart>
 
           <Pie
-            data={data}
+            data={chartData}
             dataKey="value"
             nameKey="category"
             cx="50%"
@@ -38,9 +63,8 @@ export default function CategoryChart({ data = [], COLORS = [] }) {
             innerRadius={60}
             outerRadius={90}
             paddingAngle={3}
-            isAnimationActive={true} // ✅ smooth animation
           >
-            {data.map((entry, index) => (
+            {chartData.map((entry, index) => (
               <Cell
                 key={index}
                 fill={COLORS[index % COLORS.length]}
@@ -56,8 +80,9 @@ export default function CategoryChart({ data = [], COLORS = [] }) {
               backgroundColor: "#0f172a",
               borderRadius: "8px",
               border: "1px solid #334155",
-              color: "#fff"
+              color: "#fff",
             }}
+            formatter={(value) => `₹${value}`}
           />
 
           {/* LEGEND */}
