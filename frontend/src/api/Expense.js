@@ -33,7 +33,7 @@ export const deleteExpense = async (id) => {
   }
 };
 
-// ================= UPDATcE =================
+// ================= UPDATE =================
 export const updateExpense = async (id, data) => {
   try {
     const res = await api.put(`/transactions/${id}`, data);
