@@ -1,11 +1,10 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://spendly-6pad.onrender.com/api", // ✅ LIVE BACKEND
-  withCredentials: true,
+  baseURL: import.meta.env.VITE_API_URL + "/api",
 });
 
-// ✅ Attach token
+// Attach token automatically
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
