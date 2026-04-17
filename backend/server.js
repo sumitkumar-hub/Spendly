@@ -8,8 +8,6 @@ import transactionRoutes from "./routes/transactionRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import budgetRoutes from "./routes/budgetRoutes.js";
-
-// 🔥 NEW IMPORT
 import categoryBudgetRoutes from "./routes/categoryBudgetRoutes.js";
 
 dotenv.config();
@@ -19,7 +17,7 @@ const app = express();
 // ✅ Middleware
 app.use(express.json());
 
-// 🔥 CORS
+// ✅ CORS
 app.use(
   cors({
     origin: [
@@ -36,24 +34,35 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/budget", budgetRoutes);
-
-// 🔥 NEW ROUTE
 app.use("/api/category-budget", categoryBudgetRoutes);
 
-// ✅ MongoDB
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.log("❌ MongoDB error:", err));
-
-// ✅ Health
+// ✅ Health check
 app.get("/", (req, res) => {
   res.send("API running...");
 });
 
-// ✅ Server
-const PORT = process.env.PORT || 5000;
+// 🔥 IMPROVED MongoDB Connection
+const startServer = async () => {
+  try {
+    console.log("⏳ Connecting to MongoDB...");
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000, // ⏱ faster fail
+    });
+
+    console.log("✅ MongoDB Connected");
+
+    const PORT = process.env.PORT || 5000;
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("❌ FULL MongoDB ERROR ↓↓↓");
+    console.error(error); // 🔥 full error (important)
+    process.exit(1);
+  }
+};
+
+startServer();

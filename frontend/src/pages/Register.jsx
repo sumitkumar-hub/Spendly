@@ -25,17 +25,26 @@ export default function Register() {
     e.preventDefault();
 
     const newErrors = {};
+
     if (!form.name) newErrors.name = "Name is required";
     if (!form.email) newErrors.email = "Email is required";
-    if (!form.password) newErrors.password = "Password is required";
+
+    // 🔥 PASSWORD VALIDATION
+    if (!form.password) {
+      newErrors.password = "Password is required";
+    } else if (form.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    }
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
     try {
       setLoading(true);
+
       await registerUser(form);
-      toast.success("Account created");
+
+      toast.success("Account created successfully 🎉");
       navigate("/login");
     } catch (err) {
       toast.error(err?.response?.data?.message || "Register failed");
@@ -47,10 +56,8 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
 
-      {/* 🔥 GLASS CARD */}
       <div className="w-full max-w-md backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl shadow-2xl p-8">
 
-        {/* TITLE */}
         <h2 className="text-3xl font-bold text-white text-center mb-2">
           Create Account 🚀
         </h2>
@@ -64,11 +71,8 @@ export default function Register() {
           {/* NAME */}
           <div>
             <label className="text-sm text-gray-300">Name</label>
-
             <div className="flex items-center gap-2 mt-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-500">
-
               <User size={18} className="text-gray-400" />
-
               <input
                 name="name"
                 type="text"
@@ -78,7 +82,6 @@ export default function Register() {
                 className="w-full bg-transparent outline-none text-white placeholder-gray-400"
               />
             </div>
-
             {errors.name && (
               <p className="text-red-400 text-xs mt-1">{errors.name}</p>
             )}
@@ -87,11 +90,8 @@ export default function Register() {
           {/* EMAIL */}
           <div>
             <label className="text-sm text-gray-300">Email</label>
-
             <div className="flex items-center gap-2 mt-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-500">
-
               <Mail size={18} className="text-gray-400" />
-
               <input
                 name="email"
                 type="email"
@@ -101,7 +101,6 @@ export default function Register() {
                 className="w-full bg-transparent outline-none text-white placeholder-gray-400"
               />
             </div>
-
             {errors.email && (
               <p className="text-red-400 text-xs mt-1">{errors.email}</p>
             )}
@@ -110,9 +109,7 @@ export default function Register() {
           {/* PASSWORD */}
           <div>
             <label className="text-sm text-gray-300">Password</label>
-
             <div className="flex items-center gap-2 mt-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-500">
-
               <Lock size={18} className="text-gray-400" />
 
               <input
@@ -120,7 +117,8 @@ export default function Register() {
                 type={showPassword ? "text" : "password"}
                 value={form.password}
                 onChange={handleChange}
-                placeholder="Create a password"
+                placeholder="Create password (min 8 characters)"
+                minLength={8}
                 className="w-full bg-transparent outline-none text-white placeholder-gray-400"
               />
 
@@ -130,7 +128,6 @@ export default function Register() {
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
-
             </div>
 
             {errors.password && (

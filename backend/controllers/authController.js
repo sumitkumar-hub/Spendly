@@ -3,6 +3,9 @@ import crypto from "crypto";
 import nodemailer from "nodemailer";
 import User from "../models/User.js";
 
+// ✅ EMAIL REGEX
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // ================= TOKEN =================
 const generateToken = (userId) => {
   const secret = process.env.JWT_SECRET;
@@ -32,6 +35,22 @@ export const registerUser = async (req, res) => {
       });
     }
 
+    // ✅ EMAIL VALIDATION
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Enter a valid email",
+      });
+    }
+
+    // ✅ PASSWORD VALIDATION
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters",
+      });
+    }
+
     const existing = await User.findOne({ email });
 
     if (existing) {
@@ -45,17 +64,14 @@ export const registerUser = async (req, res) => {
 
     const token = generateToken(user._id);
 
-    const userData = {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-    };
-
-    // 🔥 Consistent response (no nested data)
     return res.status(201).json({
       success: true,
       message: "User registered successfully",
-      user: userData,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
       token: token,
     });
   } catch (err) {
@@ -80,6 +96,14 @@ export const loginUser = async (req, res) => {
       });
     }
 
+    // ✅ EMAIL VALIDATION
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format",
+      });
+    }
+
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -100,17 +124,14 @@ export const loginUser = async (req, res) => {
 
     const token = generateToken(user._id);
 
-    const userData = {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-    };
-
-    // 🔥 FINAL FIX (flat response)
     return res.json({
       success: true,
       message: "Login successful",
-      user: userData,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
       token: token,
     });
   } catch (err) {
@@ -128,6 +149,14 @@ export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
+    // ✅ EMAIL VALIDATION
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Enter a valid email",
+      });
+    }
+
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -137,7 +166,6 @@ export const forgotPassword = async (req, res) => {
       });
     }
 
-    // 🔐 Generate token
     const resetToken = crypto.randomBytes(32).toString("hex");
 
     user.resetPasswordToken = crypto
@@ -151,7 +179,6 @@ export const forgotPassword = async (req, res) => {
 
     const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
 
-    // 📧 Send Email
     await transporter.sendMail({
       to: user.email,
       subject: "Password Reset",
@@ -182,6 +209,14 @@ export const resetPassword = async (req, res) => {
     const { token } = req.params;
     const { password } = req.body;
 
+    // ✅ PASSWORD VALIDATION
+    if (!password || password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters",
+      });
+    }
+
     const hashedToken = crypto
       .createHash("sha256")
       .update(token)
@@ -199,7 +234,6 @@ export const resetPassword = async (req, res) => {
       });
     }
 
-    // 🔥 Password will be hashed by model pre-save hook
     user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
